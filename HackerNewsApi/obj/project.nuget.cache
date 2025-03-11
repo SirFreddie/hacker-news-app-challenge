@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "IB2K0bId75Q=",
+  "success": true,
+  "projectFilePath": "/home/rluque/projects/hacker-news-app/HackerNewsApi/HackerNewsApi.csproj",
+  "expectedPackageFiles": [
+    "/home/rluque/.nuget/packages/microsoft.aspnetcore.openapi/9.0.2/microsoft.aspnetcore.openapi.9.0.2.nupkg.sha512",
+    "/home/rluque/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
