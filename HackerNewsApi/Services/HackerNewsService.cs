@@ -39,7 +39,7 @@ public class HackerNewsService : IHackerNewsService
         {
             var story = await _httpClient.GetFromJsonAsync<NewsStory>($"{_baseUrl}/item/{id}.json");
             if (story != null && !string.IsNullOrEmpty(story.Url))
-            {
+            {   
                 newStories.Add(story);
             }
         }
