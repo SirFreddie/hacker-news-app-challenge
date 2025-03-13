@@ -1,0 +1,54 @@
+# Visual Studio Code settings
+.vscode/
+
+# Build and output folders
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs and temporary files
+*.log
+*.tlog
+*.cache
+*.pid
+*.tar.gz
+*.zip
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# .NET Core dependency caches
+.nuget/
+packages/
+project.lock.json
+project.assets.json
+
+# Debug and crash reports
+*.pdb
+*.crash
+*.stackdump
+
+# Configuration and secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+secrets.json
+.env
+.env.*
+
+# Rider & JetBrains files
+.idea/
+*.sln.iml
+
+# MacOS & Linux system files
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
