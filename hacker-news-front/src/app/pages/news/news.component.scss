@@ -34,6 +34,11 @@ table {
   width: 100%;
 }
 
+th,
+td {
+  width: 50%;
+}
+
 .loading-shade {
   position: absolute;
   top: 0;
