@@ -22,7 +22,6 @@ public class HackerNewsService : IHackerNewsService
             return new PaginatedResponse<NewsStory>(new List<NewsStory>(), 0, page, pageSize);
         }
 
-        var totalStories = storyIds.Length;
         var cachedStories = _cache.Get<List<NewsStory>>(CacheKey) ?? new List<NewsStory>();
 
         // Determine the range of stories to fetch for this page
@@ -55,6 +54,10 @@ public class HackerNewsService : IHackerNewsService
         var filteredStories = string.IsNullOrWhiteSpace(searchQuery)
             ? cachedStories
             : cachedStories.Where(s => s.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        var totalStories = string.IsNullOrWhiteSpace(searchQuery)
+            ? storyIds.Length
+            : filteredStories.Count;
 
         // Get paginated stories from updated cache
         var paginatedStories = filteredStories

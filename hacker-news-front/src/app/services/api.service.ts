@@ -14,9 +14,11 @@ export class ApiService {
 
   constructor() {}
 
-  getNews(
-    filter: { page: number; search?: string } = { page: 1 }
-  ): Observable<GetNewsResponse> {
+  getNews(filter: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+  }): Observable<GetNewsResponse> {
     let httpParams = new HttpParams();
 
     if (filter.search) {
@@ -25,6 +27,10 @@ export class ApiService {
 
     if (filter.page) {
       httpParams = httpParams.set("page", filter.page.toString());
+    }
+
+    if (filter.pageSize) {
+      httpParams = httpParams.set("pageSize", filter.pageSize.toString());
     }
 
     return this._httpClient.get<GetNewsResponse>(`${this._baseUrl}/news`, {

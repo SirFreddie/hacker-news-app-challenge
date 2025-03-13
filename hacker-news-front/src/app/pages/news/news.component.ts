@@ -49,7 +49,8 @@ export class NewsComponent {
 
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 1));
+    this.filter.valueChanges.subscribe(() => this.paginator.firstPage());
 
     merge(
       this.sort.sortChange,
