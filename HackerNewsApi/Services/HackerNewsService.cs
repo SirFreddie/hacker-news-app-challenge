@@ -13,40 +13,55 @@ public class HackerNewsService : IHackerNewsService
         _cache = cache;
     }
 
-    public async Task<List<NewsStory>> GetNewestStoriesAsync(int page, int pageSize, string? searchQuery)
+    public async Task<PaginatedResponse<NewsStory>> GetNewestStoriesAsync(int page, int pageSize, string? searchQuery)
     {
-        if (!_cache.TryGetValue(CacheKey, out List<NewsStory>? cachedStories))
+        // Fetch story IDs (always up-to-date)
+        var storyIds = await _httpClient.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json");
+        if (storyIds == null || storyIds.Length == 0)
         {
-            var storyIds = await _httpClient.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json");
-            var stories = new List<NewsStory>();
+            return new PaginatedResponse<NewsStory>(new List<NewsStory>(), 0, page, pageSize);
+        }
 
-            if (storyIds != null)
+        var totalStories = storyIds.Length;
+        var cachedStories = _cache.Get<List<NewsStory>>(CacheKey) ?? new List<NewsStory>();
+
+        // Determine the range of stories to fetch for this page
+        var skip = (page - 1) * pageSize;
+        var idsToFetch = storyIds.Skip(skip).Take(pageSize).ToList();
+
+        // Check if the page is already cached
+        var cachedIds = cachedStories.Select(s => s.Id).ToHashSet();
+        var missingIds = idsToFetch.Where(id => !cachedIds.Contains(id)).ToList();
+
+        // Fetch only the missing stories
+        var newStories = new List<NewsStory>();
+        foreach (var id in missingIds)
+        {
+            var story = await _httpClient.GetFromJsonAsync<NewsStory>($"{_baseUrl}/item/{id}.json");
+            if (story != null && !string.IsNullOrEmpty(story.Url))
             {
-                foreach (var id in storyIds.Take(20)) 
-                {
-                    var story = await _httpClient.GetFromJsonAsync<NewsStory>($"{_baseUrl}/item/{id}.json");
-
-                    if (story != null && !string.IsNullOrEmpty(story.Url))
-                    {
-                        stories.Add(story);
-                    }
-                }
+                newStories.Add(story);
             }
-
-            _cache.Set(CacheKey, stories, TimeSpan.FromMinutes(5));
-            cachedStories = stories;
         }
 
-        if (!string.IsNullOrWhiteSpace(searchQuery))
+        // Merge new stories into cache
+        if (newStories.Count > 0)
         {
-            cachedStories = cachedStories
-                .Where(s => s.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            cachedStories.AddRange(newStories);
+            _cache.Set(CacheKey, cachedStories, TimeSpan.FromMinutes(10)); 
         }
 
-        return cachedStories
-            .Skip((page - 1) * pageSize)
+        // Apply search filter
+        var filteredStories = string.IsNullOrWhiteSpace(searchQuery)
+            ? cachedStories
+            : cachedStories.Where(s => s.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        // Get paginated stories from updated cache
+        var paginatedStories = filteredStories
+            .Skip(skip)
             .Take(pageSize)
             .ToList();
+
+        return new PaginatedResponse<NewsStory>(paginatedStories, totalStories, page, pageSize);
     }
 }
