@@ -50,7 +50,7 @@
       </table>
     </div>
 
-    <mat-paginator [length]="resultsLength" [pageSize]="10" [disabled]="isLoadingResults"
-      aria-label="Select page of Hacker News results"></mat-paginator>
+    <mat-paginator [length]="resultsLength" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"
+      [disabled]="isLoadingResults" aria-label="Select page of Hacker News results"></mat-paginator>
   </div>
 </div>

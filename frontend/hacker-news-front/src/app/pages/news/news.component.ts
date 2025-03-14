@@ -62,6 +62,7 @@ export class NewsComponent {
           this.isLoadingResults = true;
           return this._apiService!.getNews({
             page: this.paginator.pageIndex + 1,
+            pageSize: this.paginator.pageSize,
             search: this.filter.value ?? "",
           }).pipe(catchError(() => observableOf(null)));
         }),
@@ -69,6 +70,8 @@ export class NewsComponent {
           this.isLoadingResults = false;
 
           if (response === null) {
+            this.paginator.firstPage();
+            this.resultsLength = 0;
             return [];
           }
 
