@@ -64,14 +64,26 @@ public class HackerNewsService : IHackerNewsService
             return cachedIds;
         }
 
-        var storyIds = await _httpClient.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json") ?? Array.Empty<int>();
-
-        if (storyIds.Length > 0)
+        try
         {
-            _cache.Set(StoriesIdsCacheKey, storyIds, TimeSpan.FromMinutes(CacheDurationMinutes));
+            var storyIds = await _httpClient.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json") ?? Array.Empty<int>();
+
+            if (storyIds.Length > 0)
+            {
+                _cache.Set(StoriesIdsCacheKey, storyIds, TimeSpan.FromMinutes(CacheDurationMinutes));
+            }
+
+            return storyIds;
+        }
+        catch (HttpRequestException)
+        {   
+            return Array.Empty<int>();
+        }
+        catch (Exception)
+        {
+            return Array.Empty<int>();
         }
 
-        return storyIds;
     }
 
     private async Task<List<NewsStory>> FetchStoriesFromApi(int[] storyIds)
