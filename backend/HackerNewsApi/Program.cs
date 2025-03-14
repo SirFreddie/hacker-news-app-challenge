@@ -1,6 +1,6 @@
 using HackerNewsApi.Services;
 
-var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy  =>
+                      policy =>
                       {
                           policy.WithOrigins("http://localhost:4200",
                                               "http://www.example.com");
@@ -29,10 +29,10 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 
-        app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "My Hacker News API V1");
-    });
+    app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "My Hacker News API V1");
+});
 }
 
 app.UseHttpsRedirection();
