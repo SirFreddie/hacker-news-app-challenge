@@ -1,10 +1,11 @@
 import { TestBed } from "@angular/core/testing";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { ApiService } from "./api.service";
 import { GetNewsResponse } from "../interfaces/responses.interface";
+import { provideHttpClient } from "@angular/common/http";
 
 describe("ApiService", () => {
   let service: ApiService;
@@ -12,8 +13,8 @@ describe("ApiService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ApiService],
+      imports: [],
+      providers: [ApiService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(ApiService);
@@ -30,7 +31,7 @@ describe("ApiService", () => {
 
   it("should fetch news with default parameters", () => {
     const mockResponse: GetNewsResponse = {
-      data: [{ id: 1, title: "Test News", url: "https://example.com" }],
+      data: [{ id: 1, title: "Test News", url: "https://test.com" }],
       totalCount: 1,
       currentPage: 1,
       pageSize: 10,
@@ -47,18 +48,18 @@ describe("ApiService", () => {
 
   it("should fetch news with search parameter", () => {
     const mockResponse: GetNewsResponse = {
-      data: [{ id: 2, title: "Angular News", url: "https://angular.io" }],
+      data: [{ id: 2, title: "Google News", url: "https://google.com" }],
       totalCount: 1,
       currentPage: 1,
       pageSize: 10,
     };
 
-    service.getNews({ search: "Angular" }).subscribe((response) => {
+    service.getNews({ search: "Google" }).subscribe((response) => {
       expect(response).toEqual(mockResponse);
     });
 
     const req = httpMock.expectOne(
-      "http://localhost:5149/api/news?search=Angular"
+      "http://localhost:5149/api/news?search=Google"
     );
     expect(req.request.method).toBe("GET");
     req.flush(mockResponse);
@@ -66,7 +67,7 @@ describe("ApiService", () => {
 
   it("should fetch news with pagination parameters", () => {
     const mockResponse: GetNewsResponse = {
-      data: [{ id: 3, title: "Paged News", url: "https://news.com" }],
+      data: [{ id: 3, title: "Paged News", url: "https://test.com" }],
       totalCount: 20,
       currentPage: 2,
       pageSize: 5,
@@ -84,12 +85,12 @@ describe("ApiService", () => {
   });
 
   it("should handle HTTP errors gracefully", () => {
-    service.getNews({}).subscribe(
-      () => fail("Should have failed with 500 status"),
-      (error) => {
+    service.getNews({}).subscribe({
+      next: () => fail("Should have failed with 500 status"),
+      error: (error) => {
         expect(error.status).toBe(500);
-      }
-    );
+      },
+    });
 
     const req = httpMock.expectOne("http://localhost:5149/api/news");
     expect(req.request.method).toBe("GET");

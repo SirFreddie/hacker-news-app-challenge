@@ -48,7 +48,6 @@ export class NewsComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit() {
-    // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 1));
     this.filter.valueChanges.subscribe(() => this.paginator.firstPage());
 
@@ -67,7 +66,6 @@ export class NewsComponent {
           }).pipe(catchError(() => observableOf(null)));
         }),
         map((response) => {
-          // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
 
           if (response === null) {
