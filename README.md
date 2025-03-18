@@ -128,6 +128,12 @@ ng test
 - **Rate Limiting Handling**: Implement a **retry mechanism** or exponential backoff in case the Hacker News API **rate limits** us.
 - **Infinite Scrolling**: Instead of traditional pagination, allow users to **dynamically load more stories** as they scroll.
 
+## ⏳ Total Estimated Development Time
+
+| **Backend Total** | **Frontend Total** | **Overall Total**               |
+| ----------------- | ------------------ | ------------------------------- |
+| 30 hours          | 10 hours           | **40 hours** (~4 full workdays) |
+
 ---
 
 ## 👨‍💻 Author
