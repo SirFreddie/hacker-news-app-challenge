@@ -20,7 +20,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IHackerNewsService, HackerNewsService>();
 
 var app = builder.Build();
 

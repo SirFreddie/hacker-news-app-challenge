@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -5,16 +6,16 @@ namespace HackerNewsApi.Services;
 
 public class HackerNewsService : IHackerNewsService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMemoryCache _cache;
     private const string StoriesIdsCacheKey = "StoryIds";
     private const string NewsStoriesCacheKey = "NewestStories";
     private const int CacheDurationMinutes = 10;
     private readonly string _baseUrl = "https://hacker-news.firebaseio.com/v0";
 
-    public HackerNewsService(HttpClient httpClient, IMemoryCache cache)
+    public HackerNewsService(IHttpClientFactory httpClientFactory, IMemoryCache cache)
     {
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         _cache = cache;
     }
 
@@ -66,7 +67,8 @@ public class HackerNewsService : IHackerNewsService
 
         try
         {
-            var storyIds = await _httpClient.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json") ?? Array.Empty<int>();
+            var client = _httpClientFactory.CreateClient();
+            var storyIds = await client.GetFromJsonAsync<int[]>($"{_baseUrl}/newstories.json") ?? Array.Empty<int>();
 
             if (storyIds.Length > 0)
             {
@@ -76,7 +78,7 @@ public class HackerNewsService : IHackerNewsService
             return storyIds;
         }
         catch (HttpRequestException)
-        {   
+        {
             return Array.Empty<int>();
         }
         catch (Exception)
@@ -88,13 +90,19 @@ public class HackerNewsService : IHackerNewsService
 
     private async Task<List<NewsStory>> FetchStoriesFromApi(int[] storyIds)
     {
-        var stories = new List<NewsStory>();
+        var stories = new ConcurrentBag<NewsStory>();
+        var client = _httpClientFactory.CreateClient();
+
         await Parallel.ForEachAsync(storyIds, async (storyId, _) =>
         {
-            var story = await _httpClient.GetFromJsonAsync<NewsStory>($"{_baseUrl}/item/{storyId}.json");
-            if (story != null) lock (stories) stories.Add(story);
+            var story = await client.GetFromJsonAsync<NewsStory>($"{_baseUrl}/item/{storyId}.json");
+            if (story != null)
+            {
+                stories.Add(story);
+            }
         });
 
-        return stories;
+        return stories.ToList();
     }
+
 }
