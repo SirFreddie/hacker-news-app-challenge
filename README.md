@@ -44,6 +44,22 @@ This project is a full-stack web application that fetches the **latest stories f
 
 ---
 
+## Current Pagination Approach
+
+- We fetch the latest story IDs from Hacker News on every request.
+- We use those IDs to determine which stories should be loaded for a specific page.
+- **Issue**: If new stories are added, the story list shifts—stories on page 2 might now be on page 3, causing some to be "lost."
+
+### Problem: Stories Shift When New Data Arrives
+
+Imagine this scenario:
+
+- User requests `page=1` (first 10 stories) → stories `[101, 102, ..., 110]`.
+- New stories arrive at the top (`111, 112, ...`).
+- User requests `page=2` → Instead of showing `[111, 112, ..., 120]`, they see some repeated and some skipped stories.
+
+---
+
 ## 🚀 Getting Started
 
 ### **1️⃣ Backend Setup** (ASP.NET Core 9)
@@ -130,8 +146,8 @@ ng test
 
 ## ⏳ Total Estimated Development Time
 
-| **Backend Total** | **Frontend Total** | **Overall Total**               |
-| ----------------- | ------------------ | ------------------------------- |
+| **Backend Total** | **Frontend Total** | **Overall Total**              |
+| ----------------- | ------------------ | ------------------------------ |
 | 30 hours          | 10 hours           | **40 hours** (5 full workdays) |
 
 ---
