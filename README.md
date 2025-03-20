@@ -132,7 +132,7 @@ ng test
 
 | **Backend Total** | **Frontend Total** | **Overall Total**               |
 | ----------------- | ------------------ | ------------------------------- |
-| 30 hours          | 10 hours           | **40 hours** (~4 full workdays) |
+| 30 hours          | 10 hours           | **40 hours** (5 full workdays) |
 
 ---
 
